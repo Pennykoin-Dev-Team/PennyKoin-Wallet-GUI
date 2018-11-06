@@ -93,12 +93,12 @@ QVariant TransactionsModel::headerData(int _section, Qt::Orientation _orientatio
   switch(_role) {
   case Qt::DisplayRole:
     switch(_section) {
-    case COLUMN_STATE:
-      return QVariant();
-    case COLUMN_DATE:
-      return tr("Date / Time");
     case COLUMN_TYPE:
       return tr("Type");
+    case COLUMN_STATE:
+      return tr("State");
+    case COLUMN_DATE:
+      return tr("Date / Time");
     case COLUMN_ADDRESS:
       return tr("Address");
     case COLUMN_AMOUNT:

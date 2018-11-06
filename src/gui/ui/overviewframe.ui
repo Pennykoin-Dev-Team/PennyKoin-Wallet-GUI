@@ -117,20 +117,20 @@ font-family: Poppins;</string>
        <rect>
         <x>200</x>
         <y>400</y>
-        <width>811</width>
-        <height>231</height>
+        <width>800</width>
+        <height>230</height>
        </rect>
       </property>
       <property name="minimumSize">
        <size>
-        <width>375</width>
-        <height>3</height>
+        <width>800</width>
+        <height>230</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>16777215</width>
-        <height>16777215</height>
+        <width>800</width>
+        <height>230</height>
        </size>
       </property>
       <property name="font">
@@ -2134,9 +2134,9 @@ font-family: Poppins;</string>
      <widget class="QLabel" name="m_currentWalletTitle">
       <property name="geometry">
        <rect>
-        <x>499</x>
+        <x>489</x>
         <y>0</y>
-        <width>141</width>
+        <width>151</width>
         <height>71</height>
        </rect>
       </property>
@@ -2152,7 +2152,7 @@ font-size: 16px;
 font-family: Poppins;</string>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00007f;&quot;&gt;currentWallet&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; color:#00007f;&quot;&gt;currentWallet&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="m_myConcealWalletTitle">

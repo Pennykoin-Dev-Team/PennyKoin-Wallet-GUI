@@ -39,10 +39,15 @@
         <file>icons/tx_input.png</file>
         <file>icons/tx_investment.png</file>
         <file>fonts/Poppins-Regular.ttf</file>
-        <file>icons/editcopy-old.png</file>
         <file>icons/qrcode-scan.png</file>
         <file>icons/close.png</file>
         <file>icons/minimize.png</file>
         <file>icons/maximize.png</file>
+        <file>icons/clock_load.png</file>
+        <file>icons/transaction.png</file>
+        <file>icons/tx_deposit.png</file>
+        <file>icons/tx_inout.png</file>
+        <file>icons/tx_output.png</file>
+        <file>icons/unconfirmed.png</file>
     </qresource>
 </RCC>
