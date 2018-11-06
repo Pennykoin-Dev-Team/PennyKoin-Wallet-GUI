@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=PennyKoin Wallet
+Comment=PennyKoin Wallet GUIse
+Exec=PennyKoinGUIse
+Terminal=false
+Type=Application
+Icon=pennykoin
+MimeType=x-scheme-handler/pennykoinwallet;
+Categories=Office;Finance;Cryptocurrency
