@@ -96,23 +96,23 @@ QVariant TransactionsModel::headerData(int _section, Qt::Orientation _orientatio
     case COLUMN_STATE:
       return QVariant();
     case COLUMN_DATE:
-      return tr("DATE");
+      return tr("Date / Time");
     case COLUMN_TYPE:
-      return tr("TYPE");
+      return tr("Type");
     case COLUMN_ADDRESS:
-      return tr("ADDRESS");
+      return tr("Address");
     case COLUMN_AMOUNT:
-      return tr("AMOUNT");
+      return tr("Amout");
     case COLUMN_FEE:
-      return tr("FEE");
+      return tr("Fee");
     case COLUMN_HEIGHT:
-      return tr("HEIGHT");
+      return tr("Height");
     case COLUMN_PAYMENT_ID:
-      return tr("PAYMENT ID");
+      return tr("Payment ID");
     case COLUMN_MESSAGE:
-      return tr("MESSAGE");
+      return tr("Message");
     case COLUMN_HASH:
-      return tr("HASH");      
+      return tr("Hash");
     default:
       break;
     }
@@ -209,7 +209,7 @@ QVariant TransactionsModel::getDisplayRole(const QModelIndex& _index) const {
   switch(_index.column()) {
   case COLUMN_DATE: {
     QDateTime date = _index.data(ROLE_DATE).toDateTime();
-    return (date.isNull() || !date.isValid() ? "-" : date.toString("yyyy-MM-dd HH:mm"));
+    return (date.isNull() || !date.isValid() ? "-" : date.toString("yyyy-MM-dd HH:mm:ss"));
   }
 
   case COLUMN_HASH:
@@ -314,17 +314,17 @@ QVariant TransactionsModel::getDecorationRole(const QModelIndex& _index) const {
     quint64 numberOfConfirmations = _index.data(ROLE_NUMBER_OF_CONFIRMATIONS).value<quint64>();
     switch (numberOfConfirmations) {
     case 0:
-      return QPixmap(":icons/clock1");
+      return QPixmap(":icons/clock_load");
     case 1: case 2:
-      return QPixmap(":icons/clock1");
+      return QPixmap(":icons/clock_load");
     case 3: case 4:
-      return QPixmap(":icons/clock2");
+      return QPixmap(":icons/clock_load");
     case 5: case 6:
-      return QPixmap(":icons/clock3");
+      return QPixmap(":icons/clock_load");
     case 7: case 8:
-      return QPixmap(":icons/clock4");
+      return QPixmap(":icons/clock_load");
     case 9:
-      return QPixmap(":icons/clock5");
+      return QPixmap(":icons/clock_load");
     default:
       return QPixmap(":icons/transaction");
     }
