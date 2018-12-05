@@ -1,7 +1,3 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
-// Copyright (c) 2014-2016 SDN developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
@@ -145,7 +141,14 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
   { 4216, "4c2c769b66b43e1d07f1f9233c089ebf8a6ebfd221513bf66078d672b2a25396" },
   { 7279, "8a577fee7dc3e5a07829b5e2abdebe7d11efb31b25d0943d4d8e6473da8ee6bf" },
   { 13924, "66c3bcbdca9a6b62da0e081729ac08db8aa70da0f89e1870b9753053c4d33624" },
-  { 24270, "c8b6d4628e8c8f3f8874631eb09a60df12fa48a3daae2ea03e1fdc03fba5799b" }
+  { 24270, "c8b6d4628e8c8f3f8874631eb09a60df12fa48a3daae2ea03e1fdc03fba5799b" },
+  { 32000, "2102a559fdc4cb81eebd525cb4edf8b328c86a503ce07813882d7515e7cb1ed1" },
+  { 40000, "b9c7772411b3c334240933b59b3b0293124989da1e68d499b7798d46867f0ccc" },
+  { 49000, "e509325b2053683ff2d626438a9d71a0e5e7a24831a24ef84d3d7750a4c1ea5c" },
+  { 57000, "a5dcd626dd46faf6fc74b012d5a965452522d9b9c59f27239e8ba4616e9d475d" },
+  { 65000, "4b99f73637509ad543feeeefa4df023bff59b58f071c7765f25caca9ef93afef" },
+  { 73000, "a74d1085be319ad4cd766b6d238e45760812005aacd748415ff45c4b257e7b39" },
+  { 81000, "87f736c9114cd41640552fbbfc54e872c4fa08942f7c1cf2bba6290a6473b16a" }
 };
 
 } // CryptoNote

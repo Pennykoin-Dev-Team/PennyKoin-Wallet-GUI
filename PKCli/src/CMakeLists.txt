@@ -71,5 +71,5 @@ add_dependencies(SimpleWallet version)
 add_dependencies(P2P version)
 
 
-set_property(TARGET SimpleWallet PROPERTY OUTPUT_NAME "PKCli")
-set_property(TARGET Daemon PROPERTY OUTPUT_NAME "PKNode")
+set_property(TARGET SimpleWallet PROPERTY OUTPUT_NAME "pkcli")
+set_property(TARGET Daemon PROPERTY OUTPUT_NAME "pknode")

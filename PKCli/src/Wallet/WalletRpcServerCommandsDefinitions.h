@@ -140,12 +140,14 @@ namespace Tools
 			uint64_t amount;
 			uint64_t block_height;
 			uint64_t unlock_time;
+			uint32_t confirmations = 0;
 
 			void serialize(ISerializer& s) {
 				KV_MEMBER(tx_hash)
 					KV_MEMBER(amount)
 					KV_MEMBER(block_height)
 					KV_MEMBER(unlock_time)
+					KV_MEMBER(confirmations)
 			}
 		};
 struct COMMAND_RPC_CREATE_INTEGRATED

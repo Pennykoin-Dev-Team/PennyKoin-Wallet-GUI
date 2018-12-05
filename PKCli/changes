@@ -1,0 +1,11 @@
+show tx now lists confs in daemon
+removed tracking and added view key ( no spend)
+rpc transaction check w view key
+softcode mixin range of 2-6
+reverted to pk style names, lowecase now
+added a lot of checkpoints
+can parse only outgoing tx in simplewallet now
+getinfo has emitted/circ coin 
+no reorganization larger than 6 blocks (tied to unlock window)
+wallet creation is timestamped
+removing test suite for time being (isn't set up properly anyway)

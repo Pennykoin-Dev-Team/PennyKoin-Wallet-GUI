@@ -62,6 +62,30 @@ namespace CryptoNote {
 		};
 	};
 	//-----------------------------------------------
+	//-----------------------------------------------
+struct K_COMMAND_RPC_CHECK_TX_WITH_PRIVATE_VIEW_KEY {
+	struct request {
+		std::string txid;
+		std::string view_key;
+		std::string address;
+ 		void serialize(ISerializer &s) {
+			KV_MEMBER(txid)
+				KV_MEMBER(view_key)
+				KV_MEMBER(address)
+		}
+	};
+ 	struct response {
+		uint64_t amount;
+		std::vector<TransactionOutput> outputs;
+		std::string status;
+ 		void serialize(ISerializer &s) {
+			KV_MEMBER(amount)
+				KV_MEMBER(outputs)
+				KV_MEMBER(status)
+		}
+	};
+};
+
 	struct COMMAND_RPC_GET_TRANSACTIONS {
 		struct request {
 			std::vector<std::string> txs_hashes;
@@ -258,6 +282,8 @@ namespace CryptoNote {
 			uint64_t outgoing_connections_count;
 			uint64_t incoming_connections_count;
 			uint64_t white_peerlist_size;
+			uint64_t alreadyGeneratedCoins;
+            uint64_t moneySupply;
 			uint64_t grey_peerlist_size;
 			uint32_t last_known_block_index;
 			uint64_t full_deposit_amount;
@@ -270,6 +296,8 @@ namespace CryptoNote {
 					KV_MEMBER(difficulty)
 					KV_MEMBER(tx_count)
 					KV_MEMBER(tx_pool_size)
+					KV_MEMBER(alreadyGeneratedCoins)
+                    KV_MEMBER(moneySupply);
 					KV_MEMBER(alt_blocks_count)
 					KV_MEMBER(outgoing_connections_count)
 					KV_MEMBER(incoming_connections_count)

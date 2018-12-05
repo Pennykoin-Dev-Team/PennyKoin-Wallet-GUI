@@ -84,7 +84,7 @@ void Settings::load()
   if (!m_settings.contains(OPTION_REMOTE_NODE)) 
   {
 
-    m_settings.insert(OPTION_REMOTE_NODE, "pool.easypool.pro:10061");
+    m_settings.insert(OPTION_REMOTE_NODE, "node2.easypool.pro:53281");
   }
 
   if (m_settings.contains(OPTION_CONNECTION)) 
@@ -101,7 +101,7 @@ void Settings::load()
 
   QStringList defaultPoolList;
 
-  defaultPoolList << "pool.easypool.pro:1116" << "us.pool.easypool.pro:1116" << "pk.pennykoin.com:1116" << "us.pk.pennykoin.com:1116";
+  defaultPoolList << "pool.easypool.pro:1116" << "pk.pennykoin.com:1116";
   if (!m_settings.contains(OPTION_MINING_POOLS)) {
 
     setMiningPoolList(QStringList() << defaultPoolList);
@@ -124,7 +124,7 @@ void Settings::load()
   }
 
   QStringList defaultNodesList;
-  defaultNodesList << "pool.easypool.pro:10061" << "us.pool.easypool.pro:10061";
+  defaultNodesList << "node2.easypool.pro:53281" << "node1.easypool.pro:10061";
   
   if (!m_settings.contains(OPTION_RPCNODES)) 
   {

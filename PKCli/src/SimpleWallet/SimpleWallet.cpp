@@ -596,22 +596,19 @@ simple_wallet::simple_wallet(System::Dispatcher& dispatcher, const CryptoNote::C
   logger(log, "simplewallet"),
   m_refresh_progress_reporter(*this),
   m_initResultPromise(nullptr),
-m_walletSynchronized(false),
-  m_trackingWallet(false){
+m_walletSynchronized(false){
   m_consoleHandler.setHandler("showkeys", boost::bind(&simple_wallet::export_keys, this, _1), "Show the secret keys of the opened wallet");
-  // m_consoleHandler.setHandler("rand_id", boost::bind(&simple_wallet::rand_integrated, this, _1), " Integrated address with a random payment ID");
-  m_consoleHandler.setHandler("integrated", boost::bind(&simple_wallet::create_integrated, this, _1), "create_integrated <payment_id> - Create an integrated address with a payment ID");
-  m_consoleHandler.setHandler("tracking", boost::bind(&simple_wallet::export_tracking_key, this, _1), "Show the tracking key of the opened wallet");
-  m_consoleHandler.setHandler("balance", boost::bind(&simple_wallet::show_balance, this, _1), "Show current wallet balance");
-  m_consoleHandler.setHandler("inc_transfers", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
+    m_consoleHandler.setHandler("integrated", boost::bind(&simple_wallet::create_integrated, this, _1), "create_integrated <payment_id> - Create an integrated address with a payment ID");
+   m_consoleHandler.setHandler("balance", boost::bind(&simple_wallet::show_balance, this, _1), "Show current wallet balance");
+  m_consoleHandler.setHandler("in_transfers", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
   m_consoleHandler.setHandler("transfers", boost::bind(&simple_wallet::listTransfers, this, _1), "transfers <height> - Show all known transfers from a certain (optional) block height");
-   //m_consoleHandler.setHandler("outputs", boost::bind(&simple_wallet::show_num_unlocked_outputs, this, _1), "Show the number of unlocked outputs available for a transaction");
+ m_consoleHandler.setHandler("out_transfers", boost::bind(&simple_wallet::show_outgoing_transfers, this, _1), "Show outgoing transfers");
   m_consoleHandler.setHandler("payments", boost::bind(&simple_wallet::show_payments, this, _1), "payments <payment_id_1> [<payment_id_2> ... <payment_id_N>] - Show payments <payment_id_1>, ... <payment_id_N>");
   m_consoleHandler.setHandler("height", boost::bind(&simple_wallet::show_blockchain_height, this, _1), "Show blockchain height");
-  m_consoleHandler.setHandler("transfer", boost::bind(&simple_wallet::transfer, this, _1),
-    "transfer <mixin_count> <addr_1> <amount_1> [<addr_2> <amount_2> ... <addr_N> <amount_N>] [-p payment_id] [-f fee]"
-    " - Transfer <amount_1>,... <amount_N> to <address_1>,... <address_N>, respectively. "
-    "<mixin_count> is the number of transactions yours is indistinguishable from (from 0 to maximum available)");
+  m_consoleHandler.setHandler("send", boost::bind(&simple_wallet::transfer, this, _1),
+    "send <mixin_count> <addr_1> <amount_1> [<addr_2> <amount_2> ... <addr_N> <amount_N>] [-p payment_id] [-f fee]"
+    " - send <amount_1>,... <amount_N> to <address_1>,... <address_N>, respectively. "
+    "<mixin_count> is the number of transactions yours is indistinguishable from (from 2-6)");
   m_consoleHandler.setHandler("paymentid", boost::bind(&simple_wallet::generate_payment_id, this, _1), "Generate random Payment ID");
   m_consoleHandler.setHandler("set_log", boost::bind(&simple_wallet::set_log, this, _1), "set_log <level> - Change current log level, <level> is a number 0-4");
   m_consoleHandler.setHandler("address", boost::bind(&simple_wallet::print_address, this, _1), "Show current wallet public address");
@@ -662,19 +659,17 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
   }
 
   if (m_generate_new.empty() && m_wallet_file_arg.empty()) {
- std::cout << "  " << ENDL
-    << "      _____ _____ _____ _____ __ __ _____ _____ _____ _____ " << ENDL
-    << "     |  _  |   __|   | |   | |  |  |  |  |     |     |   | |" << ENDL
-    << "     |   __|   __| | | | | | |_   _|    -|  |  |-   -| | | |" << ENDL
-    << "     |__|  |_____|_|___|_|___| |_| |__|__|_____|_____|_|___|   CLI WALLET" << ENDL
-     << "  " << ENDL;
-    std::cout << " \n[O]pen existing wallet\n[G]enerate new wallet\n[R]estore from private key\n[M]nemonic wallet restore\n[T]racking wallet import\n[E]xit.\n";
+
+ std::cout << "  " << ENDL;
+
+
+    std::cout << " \n[O]pen existing wallet\n[G]enerate new wallet\n[R]estore from private key\n[M]nemonic wallet restore\n[E]xit\n";
     char c;
     do {
       std::string answer;
       std::getline(std::cin, answer);
       c = answer[0];
-      if (!(c == 'O' || c == 'G' || c == 'E' || c == 'o' || c == 'T' || c == 't' || c == 'g' || c == 'e' || c == 'R' || c == 'r' || c == 'M' || c == 'm' )) {
+      if (!(c == 'O' || c == 'G' || c == 'E' || c == 'o' || c == 'g' || c == 'e' || c == 'R' || c == 'r' || c == 'M' || c == 'm' )) {
         std::cout << "Unknown command: " << c <<std::endl;
       } else {
         break;
@@ -698,8 +693,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
       m_import_new = userInput;
     } else if (c == 'g' || c == 'G') {
       m_generate_new = userInput;
-        } else if (c == 't' || c == 'T') {
-      m_track_new = userInput;
 	  }else if (c == 'R' || c == 'r') {
      m_restore_new = userInput;
     } else {
@@ -926,58 +919,21 @@ if (key_import) {
       if (!writeAddressFile(walletAddressFile, m_wallet->getAddress())) {
           logger(WARNING, BRIGHT_RED) << "Couldn't write wallet address file: " + walletAddressFile;
       }
-  } else if (!m_track_new.empty()) {
-      std::string walletAddressFile = prepareWalletAddressFilename(m_restore_new);
+    } else if (!m_restore_new.empty()) {
+   std::string walletAddressFile = prepareWalletAddressFilename(m_restore_new);
       boost::system::error_code ignore;
       if (boost::filesystem::exists(walletAddressFile, ignore)) {
           logger(ERROR, BRIGHT_RED) << "Address file already exists: " + walletAddressFile;
           return false;
       }
-      std::string tracking_key_string;
+      std::string private_key_string;
       
       do {
-          std::cout << "Tracking Key: ";
-          std::getline(std::cin, tracking_key_string);
-          boost::algorithm::trim(tracking_key_string);
-      } while (tracking_key_string.empty());
-      if (tracking_key_string.length() != 256) {
-          logger(ERROR, BRIGHT_RED) << "Wrong Tracking key.";
-          return false;
-      }
-      AccountKeys keys;
-      std::string public_spend_key_string = tracking_key_string.substr(0, 64);
-      std::string public_view_key_string = tracking_key_string.substr(64, 64);
-      std::string private_spend_key_string = tracking_key_string.substr(128, 64);
-      std::string private_view_key_string = tracking_key_string.substr(192, 64);
-      Crypto::Hash public_spend_key_hash;
-      Crypto::Hash public_view_key_hash;
-      Crypto::Hash private_spend_key_hash;
-      Crypto::Hash private_view_key_hash;
-      size_t size;
-      if (!Common::fromHex(public_spend_key_string, &public_spend_key_hash, sizeof(public_spend_key_hash), size) || size != sizeof(public_spend_key_hash)) {
-          return false;
-      }
-      if (!Common::fromHex(public_view_key_string, &public_view_key_hash, sizeof(public_view_key_hash), size) || size != sizeof(public_view_key_hash)) {
-          return false;
-      }
-      if (!Common::fromHex(private_spend_key_string, &private_spend_key_hash, sizeof(private_spend_key_hash), size) || size != sizeof(private_spend_key_hash)) {
-          return false;
-      }
-      if (!Common::fromHex(private_view_key_string, &private_view_key_hash, sizeof(private_view_key_hash), size) || size != sizeof(private_spend_key_hash)) {
-          return false;
-      }
-      Crypto::PublicKey public_spend_key = *(struct Crypto::PublicKey *) &public_spend_key_hash;
-      Crypto::PublicKey public_view_key = *(struct Crypto::PublicKey *) &public_view_key_hash;
-      Crypto::SecretKey private_spend_key = *(struct Crypto::SecretKey *) &private_spend_key_hash;
-      Crypto::SecretKey private_view_key = *(struct Crypto::SecretKey *) &private_view_key_hash;
-      keys.address.spendPublicKey = public_spend_key;
-      keys.address.viewPublicKey = public_view_key;
-      keys.spendSecretKey = private_spend_key;
-      keys.viewSecretKey = private_view_key;
-      if (!new_tracking_wallet(keys, walletFileName, pwd_container.password())) {
-          logger(ERROR, BRIGHT_RED) << "account creation failed";
-          return false;
-      }
+          std::cout << "Private Key: ";
+          std::getline(std::cin, private_key_string);
+          boost::algorithm::trim(private_key_string);
+} while (private_key_string.empty());
+    
       if (!writeAddressFile(walletAddressFile, m_wallet->getAddress())) {
           logger(WARNING, BRIGHT_RED) << "Couldn't write wallet address file: " + walletAddressFile;
       }
@@ -1104,7 +1060,8 @@ bool simple_wallet::new_wallet(const std::string &wallet_file, const std::string
     m_wallet->getAccountKeys(keys);
 
     logger(INFO, BRIGHT_WHITE) <<
-          "Generated new wallet: " << m_wallet->getAddress();
+          "Generated new wallet: " << m_wallet->getAddress() <<
+           "view key: " << Common::podToHex(keys.viewSecretKey);
   }
   catch (const std::exception& e) {
     fail_msg_writer() << "failed to generate new wallet: " << e.what();
@@ -1173,6 +1130,27 @@ bool simple_wallet::new_wallet(Crypto::SecretKey &secret_key, Crypto::SecretKey 
     "current session's state. Otherwise, you will possibly need to synchronize \n" <<
     "your wallet again. Your wallet key is NOT under risk anyway.\n" <<
     "**********************************************************************";
+  return true;
+}
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+bool simple_wallet::show_outgoing_transfers(const std::vector<std::string>& args) {
+  bool hasTransfers = false;
+  size_t transactionsCount = m_wallet->getTransactionCount();
+  for (size_t transactionNumber = 0; transactionNumber < transactionsCount; ++transactionNumber) {
+    WalletLegacyTransaction txInfo;
+    m_wallet->getTransaction(transactionNumber, txInfo);
+    if (txInfo.totalAmount > 0) continue;
+    hasTransfers = true;
+    logger(INFO) << "        Amount       \t                              TX ID";
+  logger(INFO, BRIGHT_MAGENTA) << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(txInfo.totalAmount) << '\t' << Common::podToHex(txInfo.hash);
+  for (TransferId id = txInfo.firstTransferId; id < txInfo.firstTransferId + txInfo.transferCount; ++id) {
+    WalletLegacyTransfer tr;
+    m_wallet->getTransfer(id, tr);
+    logger(INFO, MAGENTA) << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(-tr.amount) << '\t' << tr.address;
+  }
+  }
+  if (!hasTransfers) success_msg_writer() << "No outgoing transfers";
   return true;
 }
 //----------------------------------------------------------------------------------------------------
@@ -1384,7 +1362,7 @@ bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::ve
   AccountKeys keys;
   m_wallet->getAccountKeys(keys);
  
-  
+  success_msg_writer(true) << "View secret key: " << Common::podToHex(keys.viewSecretKey);
   success_msg_writer(true) << "Private key: " <<  Tools::Base58::encode_addr(parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
     std::string(reinterpret_cast<char*>(&keys), sizeof(keys)));
     Crypto::PublicKey unused_dummy_variable;
@@ -1674,10 +1652,15 @@ bool simple_wallet::transfer(const std::vector<std::string> &args) {
     WalletHelper::IWalletRemoveObserverGuard removeGuard(*m_wallet, sent);
 
 
-    if (cmd.fake_outs_count < 2) {
+    if (cmd.fake_outs_count < 3) {
       fail_msg_writer() << "Mixin too small, must be above 2";
       return true;
     }
+        if (cmd.fake_outs_count < 5) {
+      fail_msg_writer() << "Mixin too small, must be above 2";
+      return true;
+    }
+
 
 
     CryptoNote::TransactionId tx = m_wallet->sendTransaction(cmd.dsts, cmd.fee, extraString, cmd.fake_outs_count, 0, messages, ttl);

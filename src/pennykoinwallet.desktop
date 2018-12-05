@@ -1,8 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=PennyKoin Wallet
-Comment=PennyKoin Wallet GUIse
-Exec=PennyKoinGUIse
+Name=PennyKoin Wallet GUI
+Comment=Pennykoin Wallet GUI
+Exec=PennykoinGUI
 Terminal=false
 Type=Application
 Icon=pennykoin

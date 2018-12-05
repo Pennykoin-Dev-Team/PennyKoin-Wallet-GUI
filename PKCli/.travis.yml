@@ -1,9 +1,10 @@
   language: cpp
 
   group: stable
-  os: 
-     - osx
-     - linux
+os:
+  - windows
+  - linux
+  - osx
   dist: xenial
   addons:
     apt:
