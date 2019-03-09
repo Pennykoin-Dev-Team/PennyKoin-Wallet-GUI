@@ -154,7 +154,7 @@ void SendMessageFrame::sendClicked() {
       return;
     }
 
-    transfers.append({address.toStdString(), MESSAGE_AMOUNT});
+    transfers.append({address.toStdString(), (int64_t)MESSAGE_AMOUNT});
     messages.append({messageString.toStdString(), address.toStdString()});
   }
 
